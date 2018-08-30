@@ -1,5 +1,6 @@
 package com.souche.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +20,15 @@ public class PropertiesUtil {
         properties = new Properties();
         FileInputStream in = null;
         try {
-            String file = System.getProperty("user.dir") + "\\src\\main\\resource\\application.properties";
+            String file = System.getProperty("user.dir")
+                    .concat(File.separator)
+                    .concat("src")
+                    .concat(File.separator)
+                    .concat("main")
+                    .concat(File.separator)
+                    .concat("resources")
+                    .concat(File.separator)
+                    .concat("application.properties");
             in = new FileInputStream(file);
             properties.load(in);
         } catch (FileNotFoundException e) {
