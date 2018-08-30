@@ -21,7 +21,7 @@ public class MarkdownGenerator {
         SwaggerDocs swaggerDocs = JSON.parseObject(HttpClientUtil.doGet(swaggerApiDocsUrl), SwaggerDocs.class);
         String termsOfServiceUrl = swaggerDocs.getInfo().getTermsOfServiceUrl();
         for (Apis apis : swaggerDocs.getApis()) {
-            JSONObject jsonObject = JSON.parseObject(HttpClientUtil.doGet(termsOfServiceUrl + apis.getPath()));
+            JSONObject jsonObject = JSON.parseObject(HttpClientUtil.doGet(swaggerApiDocsUrl + apis.getPath()));
             JSONArray docsApis = jsonObject.getJSONArray("apis");
             JSONObject docsModels = jsonObject.getJSONObject("models");
             System.out.println(titleLevel[0] + apis.getDescription());
@@ -46,9 +46,12 @@ public class MarkdownGenerator {
     }
 
     private static void getRequest(JSONObject docsModels, JSONObject operation) {
-        System.out.println("|请求类型|字段名|是否必填|字段类型|描述|");
-        System.out.println("|---|---|---|---|---|");
+
         JSONArray parameters = operation.getJSONArray("parameters");
+        if (parameters.size()>0){
+            System.out.println("|请求类型|字段名|是否必填|字段类型|描述|");
+            System.out.println("|---|---|---|---|---|");
+        }
         List<String> requestTypes = new ArrayList<>();
         for (Object object : parameters) {
             JSONObject parameter = (JSONObject) object;
@@ -115,7 +118,6 @@ public class MarkdownGenerator {
         if (requestTypes.size() > 0) {
             for (String requestType : requestTypes) {
                 System.out.println(titleLevel[i] + requestType);
-                System.out.println();
                 System.out.println("|字段名|是否必填|字段类型|描述|");
                 System.out.println("|---|---|---|---|");
                 JSONObject properties = docsModels.getJSONObject(requestType).getJSONObject("properties");
@@ -146,7 +148,6 @@ public class MarkdownGenerator {
         if (responseTypes.size() > 0) {
             for (String responseType : responseTypes) {
                 System.out.println(titleLevel[i] + responseType);
-                System.out.println();
                 System.out.println("|字段名|字段类型|描述|");
                 System.out.println("|---|---|---|");
                 JSONObject properties = docsModels.getJSONObject(responseType).getJSONObject("properties");
