@@ -22,10 +22,11 @@ public class MarkdownGenerator {
     }
 
     private static void generator() throws IOException {
-        String swaggerApiDocsUrl = PropertiesUtil.getInstance().getStringValue("swagger.api-docs.url");
-        SwaggerDocs swaggerDocs = JSON.parseObject(HttpClientUtil.doGet(swaggerApiDocsUrl), SwaggerDocs.class);
+        String baseUrl = PropertiesUtil.getInstance().getStringValue("base.url");
+        String apiDocsUrl = baseUrl.concat("/api-docs");
+        SwaggerDocs swaggerDocs = JSON.parseObject(HttpClientUtil.doGet(apiDocsUrl), SwaggerDocs.class);
         for (Apis apis : swaggerDocs.getApis()) {
-            JSONObject jsonObject = JSON.parseObject(HttpClientUtil.doGet(swaggerApiDocsUrl + apis.getPath()));
+            JSONObject jsonObject = JSON.parseObject(HttpClientUtil.doGet(apiDocsUrl + apis.getPath()));
             JSONArray docsApis = jsonObject.getJSONArray("apis");
             JSONObject docsModels = jsonObject.getJSONObject("models");
             Markdown.Builder markdwonBuilder = new Markdown.Builder();
@@ -37,7 +38,7 @@ public class MarkdownGenerator {
                 JSONObject operation = (JSONObject) docsApi.getJSONArray("operations").get(0);
                 markdwonBuilder.h2((i + 1) + "." + operation.getString("summary"));
                 markdwonBuilder.h3("请求路径");
-                markdwonBuilder.code(swaggerApiDocsUrl + docsApi.getString("path"));
+                markdwonBuilder.code(baseUrl + docsApi.getString("path"));
                 markdwonBuilder.h3("请求方式");
                 markdwonBuilder.line(operation.getString("method"));
                 markdwonBuilder.h3("请求类型");
