@@ -15,7 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author huchao
+ */
 public class MarkdownGenerator {
+
+    private final static String SWAGGER_ARRAY = "array";
 
     public static void main(String[] args) throws IOException {
         generator();
@@ -66,7 +71,7 @@ public class MarkdownGenerator {
             String name = parameter.getString("name");
             String required = parameter.getString("required");
             String description = parameter.getString("description");
-            if (type.equals("array")) {
+            if (type.equals(SWAGGER_ARRAY)) {
                 type = parameter.getJSONObject("items").getString("type");
                 markdwonBuilder.tableTd(paramType, name, required, "[" + type + "]", description);
             } else {
@@ -104,7 +109,7 @@ public class MarkdownGenerator {
         for (String key : keySet) {
             String type = properties.getJSONObject(key).getString("type");
             String description = properties.getJSONObject(key).getString("description");
-            if (type.equals("array")) {
+            if (type.equals(SWAGGER_ARRAY)) {
                 type = properties.getJSONObject(key).getJSONObject("items").getString("type");
                 markdwonBuilder.tableTd(key, "[" + type + "]", description);
             } else {
@@ -128,7 +133,7 @@ public class MarkdownGenerator {
                     String tempType = properties.getJSONObject(key).getString("type");
                     String description = properties.getJSONObject(key).getString("description");
                     String required = properties.getJSONObject(key).getString("required");
-                    if (tempType.equals("array")) {
+                    if (tempType.equals(SWAGGER_ARRAY)) {
                         tempType = properties.getJSONObject(key).getJSONObject("items").getString("type");
                         markdwonBuilder.tableTd(key, required, "[" + tempType + "]", description);
                     } else {
