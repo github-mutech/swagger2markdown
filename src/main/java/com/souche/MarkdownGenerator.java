@@ -11,9 +11,7 @@ import com.souche.util.PropertiesUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author huchao
@@ -40,18 +38,21 @@ public class MarkdownGenerator {
             markdwonBuilder.h1(apis.getDescription());
             for (int i = 0, size = docsApis.size(); i < size; i++) {
                 JSONObject docsApi = (JSONObject) docsApis.get(i);
-                JSONObject operation = (JSONObject) docsApi.getJSONArray("operations").get(0);
-                markdwonBuilder.h2((i + 1) + "." + operation.getString("summary"));
-                markdwonBuilder.h3("请求路径");
-                markdwonBuilder.code(baseUrl + docsApi.getString("path"));
-                markdwonBuilder.h3("请求方式");
-                markdwonBuilder.line(operation.getString("method"));
-                markdwonBuilder.h3("请求类型");
-                markdwonBuilder.line(operation.getString("consumes"));
-                markdwonBuilder.h3("请求体");
-                getRequest(markdwonBuilder, docsModels, operation);
-                markdwonBuilder.h3("响应体");
-                getResponse(markdwonBuilder, docsModels, operation);
+                JSONArray operations = docsApi.getJSONArray("operations");
+                for (Object object : operations) {
+                    JSONObject operation = (JSONObject) object;
+                    markdwonBuilder.h2((i + 1) + "." + operation.getString("summary"));
+                    markdwonBuilder.h3("请求路径");
+                    markdwonBuilder.code(baseUrl + docsApi.getString("path"));
+                    markdwonBuilder.h3("请求方式");
+                    markdwonBuilder.line(operation.getString("method"));
+                    markdwonBuilder.h3("请求类型");
+                    markdwonBuilder.line(operation.getString("consumes"));
+                    markdwonBuilder.h3("请求体");
+                    getRequest(markdwonBuilder, docsModels, operation);
+                    markdwonBuilder.h3("响应体");
+                    getResponse(markdwonBuilder, docsModels, operation);
+                }
             }
             markdwonBuilder.build().toFile();
         }
@@ -62,10 +63,10 @@ public class MarkdownGenerator {
         if (parameters.size() == 0) {
             return;
         }
+        List<JSONObject> parameterList = jsonArraySortToList(parameters);
         markdwonBuilder.tableTr("请求类型", "字段名", "是否必填", "字段类型", "描述");
         List<String> requestTypes = new ArrayList<>();
-        for (Object object : parameters) {
-            JSONObject parameter = (JSONObject) object;
+        for (JSONObject parameter : parameterList) {
             String type = parameter.getString("type");
             String paramType = parameter.getString("paramType");
             String name = parameter.getString("name");
@@ -82,6 +83,19 @@ public class MarkdownGenerator {
             }
         }
         getRequestDetail(markdwonBuilder, docsModels, requestTypes);
+    }
+
+    private static List<JSONObject> jsonArraySortToList(JSONArray parameters) {
+        List<JSONObject> parameterList = parameters.toJavaList(JSONObject.class);
+        parameterList.sort((o1, o2) -> {
+            String name1 = o1.getString("name");
+            String name2 = o2.getString("name");
+            if (name1 == null || name2 == null) {
+                return -1;
+            }
+            return name1.compareTo(name2);
+        });
+        return parameterList;
     }
 
     private static void getResponse(Markdown.Builder markdwonBuilder, JSONObject docsModels, JSONObject operation) {
@@ -129,7 +143,14 @@ public class MarkdownGenerator {
                 JSONObject properties = docsModels.getJSONObject(requestType).getJSONObject("properties");
                 List<String> tempTypes = new ArrayList<>();
                 Set<String> keySet = properties.keySet();
-                for (String key : keySet) {
+                List<String> propertieList = new ArrayList<>(keySet);
+                propertieList.sort((o1, o2) -> {
+                    if (o1 == null || o2 == null) {
+                        return -1;
+                    }
+                    return o1.compareTo(o2);
+                });
+                for (String key : propertieList) {
                     String tempType = properties.getJSONObject(key).getString("type");
                     String description = properties.getJSONObject(key).getString("description");
                     String required = properties.getJSONObject(key).getString("required");
