@@ -21,10 +21,10 @@ public class MarkdownGenerator {
     private final static String SWAGGER_ARRAY = "array";
 
     public static void main(String[] args) throws IOException {
-        generator();
+        new MarkdownGenerator().generator();
     }
 
-    private static void generator() throws IOException {
+    private void generator() throws IOException {
         String baseUrl = PropertiesUtil.getInstance().getStringValue("base.url");
         String apiDocsUrl = baseUrl.concat("/api-docs");
         SwaggerDocs swaggerDocs = JSON.parseObject(HttpClientUtil.doGet(apiDocsUrl), SwaggerDocs.class);
@@ -58,7 +58,7 @@ public class MarkdownGenerator {
         }
     }
 
-    private static void getRequest(Markdown.Builder markdwonBuilder, JSONObject docsModels, JSONObject operation) {
+    private void getRequest(Markdown.Builder markdwonBuilder, JSONObject docsModels, JSONObject operation) {
         JSONArray parameters = operation.getJSONArray("parameters");
         if (parameters.size() == 0) {
             return;
@@ -98,7 +98,7 @@ public class MarkdownGenerator {
         return parameterList;
     }
 
-    private static void getResponse(Markdown.Builder markdwonBuilder, JSONObject docsModels, JSONObject operation) {
+    private void getResponse(Markdown.Builder markdwonBuilder, JSONObject docsModels, JSONObject operation) {
         JSONArray responseMessages = operation.getJSONArray("responseMessages");
         for (Object object : responseMessages) {
             JSONObject responseMessage = (JSONObject) object;
@@ -119,7 +119,7 @@ public class MarkdownGenerator {
         }
     }
 
-    private static void getTypes(Markdown.Builder markdwonBuilder, JSONObject docsModels, JSONObject properties, Set<String> keySet, List<String> types) {
+    private void getTypes(Markdown.Builder markdwonBuilder, JSONObject docsModels, JSONObject properties, Set<String> keySet, List<String> types) {
         for (String key : keySet) {
             String type = properties.getJSONObject(key).getString("type");
             String description = properties.getJSONObject(key).getString("description");
@@ -135,7 +135,7 @@ public class MarkdownGenerator {
         }
     }
 
-    private static void getRequestDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types) {
+    private void getRequestDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types) {
         if (types.size() > 0) {
             for (String requestType : types) {
                 markdwonBuilder.h4(requestType);
@@ -169,7 +169,7 @@ public class MarkdownGenerator {
         }
     }
 
-    private static void getResponseDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types) {
+    private void getResponseDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types) {
         if (types.size() > 0) {
             for (String responseType : types) {
                 markdwonBuilder.h4(responseType);
