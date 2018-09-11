@@ -3,3 +3,5 @@
 target/
 *.iml
 src/test/
+docs/
+.DS_Store
