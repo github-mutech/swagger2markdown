@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author H
+ */
 public class HttpClientUtil {
 
     public static String doGet(String url, Map<String, String> param) {

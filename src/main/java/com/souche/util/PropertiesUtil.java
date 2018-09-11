@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * @author huchao
+ * @author H
  */
 public class PropertiesUtil {
 
