@@ -11,7 +11,9 @@ import com.souche.util.PropertiesUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author huchao
@@ -34,7 +36,7 @@ public class MarkdownGenerator {
             JSONObject docsModels = jsonObject.getJSONObject("models");
             Markdown.Builder markdwonBuilder = new Markdown.Builder();
             markdwonBuilder.filePath(System.getProperty("user.dir").concat(File.separator).concat("docs").concat(File.separator));
-            markdwonBuilder.fileName(apis.getDescription().concat(".md"));
+            markdwonBuilder.fileName(apis.getDescription().concat(".md").replace("/", "或"));
             markdwonBuilder.h1(apis.getDescription());
             for (int i = 0, size = docsApis.size(); i < size; i++) {
                 JSONObject docsApi = (JSONObject) docsApis.get(i);
