@@ -1,9 +1,8 @@
 package com.souche.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -18,7 +17,8 @@ public class PropertiesUtil {
     static {
         instance = new PropertiesUtil();
         properties = new Properties();
-        FileInputStream in = null;
+
+        InputStream in = null;
         try {
             String file = System.getProperty("user.dir")
                     .concat(File.separator)
@@ -30,9 +30,7 @@ public class PropertiesUtil {
                     .concat(File.separator)
                     .concat("application.properties");
             in = new FileInputStream(file);
-            properties.load(in);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            properties.load(new InputStreamReader(in, "utf-8"));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -56,6 +54,14 @@ public class PropertiesUtil {
 
     public String getStringValue(String key) {
         return properties.getProperty(key);
+    }
+
+    public List<String> getListStringValue(String key) {
+        String property = properties.getProperty(key);
+        if (property.isEmpty()) {
+            throw new IllegalArgumentException(key + "=");
+        }
+        return Arrays.asList(property.split(","));
     }
 
     public Integer getIntegerValue(String key) {
