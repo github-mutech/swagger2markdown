@@ -28,6 +28,8 @@ public class MarkdownGenerator {
 
     private void generator() throws IOException {
         String baseUrl = PropertiesUtil.getInstance().getStringValue("base.url");
+        List<String> apiList = PropertiesUtil.getInstance().getListStringValue("api.list");
+        boolean generatorAll = apiList.size() == 1 && "all".equals(apiList.get(0));
         String apiDocsUrl = baseUrl.concat("/api-docs");
         SwaggerDocs swaggerDocs = JSON.parseObject(HttpClientUtil.doGet(apiDocsUrl), SwaggerDocs.class);
         for (Apis apis : swaggerDocs.getApis()) {
@@ -36,7 +38,15 @@ public class MarkdownGenerator {
             JSONObject docsModels = jsonObject.getJSONObject("models");
             Markdown.Builder markdwonBuilder = new Markdown.Builder();
             markdwonBuilder.filePath(System.getProperty("user.dir").concat(File.separator).concat("docs").concat(File.separator));
-            markdwonBuilder.fileName(apis.getDescription().concat(".md").replace("/", "或"));
+            String description = apis.getDescription();
+            if (!generatorAll && !apiList.contains(description)) {
+                continue;
+            }
+            // 替换'/'
+            if (description.contains("/")) {
+                description = description.replaceAll("/", "或");
+            }
+            markdwonBuilder.fileName(description.concat(".md"));
             markdwonBuilder.h1(apis.getDescription());
             for (int i = 0, size = docsApis.size(); i < size; i++) {
                 JSONObject docsApi = (JSONObject) docsApis.get(i);
@@ -84,7 +94,8 @@ public class MarkdownGenerator {
                 requestTypes.add(type);
             }
         }
-        getRequestDetail(markdwonBuilder, docsModels, requestTypes);
+        List<String> typeList = new ArrayList<>();
+        getRequestDetail(markdwonBuilder, docsModels, requestTypes, typeList);
     }
 
     private static List<JSONObject> jsonArraySortToList(JSONArray parameters) {
@@ -112,9 +123,10 @@ public class MarkdownGenerator {
                     Set<String> keySet = properties.keySet();
                     markdwonBuilder.tableTr("字段名", "字段类型", "描述");
                     List<String> types = new ArrayList<>();
+                    List<String> typeList = new ArrayList<>();
                     getTypes(markdwonBuilder, docsModels, properties, keySet, types);
                     if (types.size() > 0) {
-                        getResponseDetail(markdwonBuilder, docsModels, types);
+                        getResponseDetail(markdwonBuilder, docsModels, types, typeList);
                     }
                 }
             }
@@ -137,9 +149,14 @@ public class MarkdownGenerator {
         }
     }
 
-    private void getRequestDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types) {
+    private void getRequestDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types, List<String> typeList) {
         if (types.size() > 0) {
             for (String requestType : types) {
+                if (typeList.contains(requestType)) {
+                    continue;
+                } else {
+                    typeList.add(requestType);
+                }
                 markdwonBuilder.h4(requestType);
                 markdwonBuilder.tableTr("字段名", "是否必填", "字段类型", "描述");
                 JSONObject properties = docsModels.getJSONObject(requestType).getJSONObject("properties");
@@ -166,21 +183,26 @@ public class MarkdownGenerator {
                         tempTypes.add(tempType);
                     }
                 }
-                getRequestDetail(markdwonBuilder, docsModels, tempTypes);
+                getRequestDetail(markdwonBuilder, docsModels, tempTypes, typeList);
             }
         }
     }
 
-    private void getResponseDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types) {
+    private void getResponseDetail(Markdown.Builder markdwonBuilder, JSONObject docsModels, List<String> types, List<String> typeList) {
         if (types.size() > 0) {
             for (String responseType : types) {
+                if (typeList.contains(responseType)) {
+                    continue;
+                } else {
+                    typeList.add(responseType);
+                }
                 markdwonBuilder.h4(responseType);
                 markdwonBuilder.tableTr("字段名", "字段类型", "描述");
                 JSONObject properties = docsModels.getJSONObject(responseType).getJSONObject("properties");
                 List<String> tempTypes = new ArrayList<>();
                 Set<String> keySet = properties.keySet();
                 getTypes(markdwonBuilder, docsModels, properties, keySet, tempTypes);
-                getResponseDetail(markdwonBuilder, docsModels, tempTypes);
+                getResponseDetail(markdwonBuilder, docsModels, tempTypes, typeList);
             }
         }
     }
