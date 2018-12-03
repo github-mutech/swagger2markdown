@@ -40,12 +40,6 @@ public final class Markdown {
             this.text = new StringBuilder();
         }
 
-        private Builder(String filePath, String fileName) {
-            this.filePath(filePath);
-            this.fileName(fileName);
-            this.text = new StringBuilder();
-        }
-
         public Markdown.Builder filePath(String filePath) {
             if (filePath == null) {
                 throw new IllegalArgumentException("filePath == null");
@@ -182,7 +176,7 @@ public final class Markdown {
 
         Markdown.Builder markdownBuilder = new Builder();
         markdownBuilder.fileName("test.md");
-        markdownBuilder.filePath(System.getProperty("user.dir").concat(File.separator).concat("te  sd st").concat(File.separator));
+        markdownBuilder.filePath(System.getProperty("user.dir").concat(File.separator).concat("test").concat(File.separator));
         markdownBuilder.h1("heeh");
         markdownBuilder.tableTr("1", "2", "3");
         markdownBuilder.tableTd("11", "22", "33");
