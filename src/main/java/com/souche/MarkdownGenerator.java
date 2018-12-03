@@ -58,11 +58,11 @@ public class MarkdownGenerator {
                 for (Object object : operations) {
                     JSONObject operation = (JSONObject) object;
                     markdwonBuilder.h2((i + 1) + "." + operation.getString("summary"));
-                    markdwonBuilder.quote(username);
-                    markdwonBuilder.quote(email);
+                    markdwonBuilder.quote("负责人：" + username, 
+                    		"邮箱：" + email);
                     markdwonBuilder.h3("请求路径");
-                    markdwonBuilder.code(devUrl + docsApi.getString("path"));
-                    markdwonBuilder.code(srpUrl + docsApi.getString("path"));
+                    markdwonBuilder.code("开发环境 " + devUrl + docsApi.getString("path"),
+                    		"正式环境 " + srpUrl + docsApi.getString("path"));
                     markdwonBuilder.h3("请求方式");
                     markdwonBuilder.line(operation.getString("method"));
                     markdwonBuilder.h3("请求类型");

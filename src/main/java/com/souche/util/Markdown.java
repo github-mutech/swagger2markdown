@@ -112,13 +112,15 @@ public final class Markdown {
             return this;
         }
 
-        public Markdown.Builder code(String code) {
-            if (code == null) {
+        public Markdown.Builder code(String... codes) {
+            if (codes == null) {
                 throw new IllegalArgumentException("code == null");
             }
-            this.text.append("```").append("\n")
-                    .append(code).append("\n")
-                    .append("```").append("\n");
+            this.text.append("```").append("\n");
+            for (String code : codes) {
+            	text.append(code).append("\n");
+			}
+            text.append("```").append("\n");
             return this;
 
         }
@@ -156,11 +158,14 @@ public final class Markdown {
             return this;
         }
         
-        public Markdown.Builder quote(String content) {
-        	   if (content == null) {
+        public Markdown.Builder quote(String... quotes) {
+        	   if (quotes == null) {
                    throw new IllegalArgumentException("content == null");
                }
-               this.text.append("> ").append(content).append("\n");
+        	   for (String quote : quotes) {
+        		   this.text.append("> ").append(quote).append("\n");
+			}
+        	   this.text.append("\n");
                return this;
 
            }
