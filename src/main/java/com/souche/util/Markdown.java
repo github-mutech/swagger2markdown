@@ -161,6 +161,16 @@ public final class Markdown {
             this.text.append("|\n");
             return this;
         }
+        
+        public Markdown.Builder quote(String content) {
+        	   if (content == null) {
+                   throw new IllegalArgumentException("content == null");
+               }
+               this.text.append("> ").append(content).append("\n");
+               return this;
+
+           }
+
 
         public Markdown build() {
             return new Markdown(this);

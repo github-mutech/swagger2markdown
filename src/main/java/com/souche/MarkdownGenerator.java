@@ -21,6 +21,12 @@ import java.util.Set;
 public class MarkdownGenerator {
 
     private final static String SWAGGER_ARRAY = "array";
+    private static String baseUrl = PropertiesUtil.getInstance().getStringValue("base.url");
+    private static String devUrl = PropertiesUtil.getInstance().getStringValue("dev.url");
+    private static String srpUrl = PropertiesUtil.getInstance().getStringValue("srp.url");
+    private static String username = PropertiesUtil.getInstance().getStringValue("username");
+    private static String email = PropertiesUtil.getInstance().getStringValue("email");
+    private static List<String> apiList = PropertiesUtil.getInstance().getListStringValue("api.list");
 
     public static void main(String[] args) throws IOException {
         new MarkdownGenerator().generator();
@@ -28,6 +34,8 @@ public class MarkdownGenerator {
 
     private void generator() throws IOException {
         String baseUrl = PropertiesUtil.getInstance().getStringValue("base.url");
+        String devUrl = PropertiesUtil.getInstance().getStringValue("dev.url");
+        String srpUrl = PropertiesUtil.getInstance().getStringValue("srp.url");
         List<String> apiList = PropertiesUtil.getInstance().getListStringValue("api.list");
         boolean generatorAll = apiList.size() == 1 && "all".equals(apiList.get(0));
         String apiDocsUrl = baseUrl.concat("/api-docs");
@@ -54,8 +62,11 @@ public class MarkdownGenerator {
                 for (Object object : operations) {
                     JSONObject operation = (JSONObject) object;
                     markdwonBuilder.h2((i + 1) + "." + operation.getString("summary"));
+                    markdwonBuilder.quote(username);
+                    markdwonBuilder.quote(email);
                     markdwonBuilder.h3("请求路径");
-                    markdwonBuilder.code(baseUrl + docsApi.getString("path"));
+                    markdwonBuilder.code(devUrl + docsApi.getString("path"));
+                    markdwonBuilder.code(srpUrl + docsApi.getString("path"));
                     markdwonBuilder.h3("请求方式");
                     markdwonBuilder.line(operation.getString("method"));
                     markdwonBuilder.h3("请求类型");
