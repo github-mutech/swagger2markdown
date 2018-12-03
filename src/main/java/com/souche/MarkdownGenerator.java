@@ -33,10 +33,6 @@ public class MarkdownGenerator {
     }
 
     private void generator() throws IOException {
-        String baseUrl = PropertiesUtil.getInstance().getStringValue("base.url");
-        String devUrl = PropertiesUtil.getInstance().getStringValue("dev.url");
-        String srpUrl = PropertiesUtil.getInstance().getStringValue("srp.url");
-        List<String> apiList = PropertiesUtil.getInstance().getListStringValue("api.list");
         boolean generatorAll = apiList.size() == 1 && "all".equals(apiList.get(0));
         String apiDocsUrl = baseUrl.concat("/api-docs");
         SwaggerDocs swaggerDocs = JSON.parseObject(HttpClientUtil.doGet(apiDocsUrl), SwaggerDocs.class);
