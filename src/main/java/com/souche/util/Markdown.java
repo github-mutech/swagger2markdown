@@ -1,6 +1,9 @@
 package com.souche.util;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * @author H
@@ -118,8 +121,8 @@ public final class Markdown {
             }
             this.text.append("```").append("\n");
             for (String code : codes) {
-            	text.append(code).append("\n");
-			}
+                text.append(code).append("\n");
+            }
             text.append("```").append("\n");
             return this;
 
@@ -157,18 +160,18 @@ public final class Markdown {
             this.text.append("|\n");
             return this;
         }
-        
-        public Markdown.Builder quote(String... quotes) {
-        	   if (quotes == null) {
-                   throw new IllegalArgumentException("content == null");
-               }
-        	   for (String quote : quotes) {
-        		   this.text.append("> ").append(quote).append("\n");
-			}
-        	   this.text.append("\n");
-               return this;
 
-           }
+        public Markdown.Builder quote(String... quotes) {
+            if (quotes == null) {
+                throw new IllegalArgumentException("content == null");
+            }
+            for (String quote : quotes) {
+                this.text.append("> ").append(quote).append("\n");
+            }
+            this.text.append("\n");
+            return this;
+
+        }
 
 
         public Markdown build() {
